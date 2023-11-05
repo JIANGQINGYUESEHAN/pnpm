@@ -5,7 +5,7 @@ import * as cheerio from 'cheerio';
 import * as fs from 'fs';
 import * as path from 'path';
 import { EmailService } from 'src/service';
-import { email } from '../config/util.config';
+import { PageTitle, email } from '../config/util.config';
 @Injectable()
 export class WebService {
   constructor(protected emailService: EmailService) { }
@@ -51,65 +51,76 @@ export class WebService {
     try {
       const $ = cheerio.load(data);
       const elements = [];
-      $('h1, h2, h3, h4, h5, h6, p, span, img').each((i, elem) => {
-        const depth = $(elem).parents().length; // Get the depth of the element
-        const tagName = elem.tagName.toLowerCase(); // Get the tag name to check if it's an image
-
-        // Handle img tags differently to extract the 'src' attribute
+      $('h1, h2, h3, h4, h5, h6, img').each((index, elem) => {
+        // elem.tagName will give the tag name
+        const tagName = elem.tagName.toLowerCase();
+        // Determine the depth
+        const depth = $(elem).parents().length;
+        // Handle image tags differently
         if (tagName === 'img') {
-          const src = $(elem).attr('src'); // Get the src attribute
-          if (src) {
-            elements.push({ src, depth, type: 'image' }); // Add image details to the array
-          }
+          const src = $(elem).attr('src');
+          elements.push({ type: 'img', src, depth });
         } else {
-          const text = $(elem).text().trim(); // Get the text and trim it
-          if (text) {
-            elements.push({ text, depth, type: 'text' }); // Add text details to the array
-          }
+          const text = $(elem).text();
+          elements.push({ type: tagName, text, depth });
         }
       });
 
       // Assuming formatElementsForTxt is a method that takes the elements array
       // and formats them for a txt output.
-      this.formatElementsForTxt(elements);
+      this.formatElementsForHtml(elements);
     } catch (error) {
       console.error('Error processing HTML:', error);
     }
   }
-  formatElementsForTxt(elements) {
-    const Text = elements
-      .map((element) => {
-        // 根据深度生成缩进，这里使用两个空格进行缩进
-        const indentation = ' '.repeat(element.depth - 1);
-        return `${indentation}${element.text}`;
-      })
-      .join('\n');
+  formatElementsForHtml(elements) {
+    console.log(elements);
+    // const aa = this.createFullPath('.txt');
+    // fs.writeFileSync(aa, elements);
+    console.log('文件写入成功');
 
-    this.saveToTxtFile(Text);
+    // let htmlContent = elements
+    //   .map((element) => {
+    //     if (element.tag === 'img') {
+    //       // For image elements, create an img tag with the src attribute
+    //       return `<img src="${element.src}" alt="${element.text || ''}">`;
+    //     } else {
+    //       // For text elements, create an HTML element with the corresponding tag
+    //       return `<${element.tag}>${element.text}</${element.tag}>`;
+    //     }
+    //   })
+    //   .join('\n');
+
+    // // Optional: Wrap the content in a root element, like <html>
+    // htmlContent = `<!DOCTYPE html>\n<html>\n<head>\n<title>${PageTitle}</title>\n</head>\n<body>\n${htmlContent}\n</body>\n</html>`;
+
+    // this.saveToHtmlFile(htmlContent); // Function to save the HTML content to a file
   }
-
-  async saveToTxtFile(Text) {
+  async saveToHtmlFile(Text) {
     try {
-      //先生成文件然后进行插入
-
+      const fullPath = await this.createFullPath();
       // 写入文件
-      const fileDirectory = path.join(process.cwd(), 'src', 'file');
-
-      const timestampFilename = `${new Date().getTime()}.txt`;
-      const fullPath = path.join(fileDirectory, timestampFilename);
-
       fs.writeFileSync(fullPath, Text);
-
       console.log('文件写入成功');
 
-      //发送邮件
-      const TestPath = path.join(fileDirectory, 'aa.md');
-      console.log(TestPath);
-
-      await this.emailService.example(email, TestPath);
+      // 发送邮件（此处假设 emailService 是一个配置好的邮件服务实例）
+      await this.emailService.example(email, fullPath);
+      console.log(`邮件发送成功: ${email}`);
     } catch (error) {
-      // 如果有错误，会在这里被捕获
-      console.error('写入文件时发生错误:', error);
+      console.error('保存HTML文件或发送邮件时发生错误:', error);
     }
+  }
+
+  createFullPath(suffix: string = '.html') {
+    // 创建文件存储的目录
+    const fileDirectory = path.join(process.cwd(), 'src', 'file');
+    if (!fs.existsSync(fileDirectory)) {
+      fs.mkdirSync(fileDirectory, { recursive: true });
+    }
+
+    // 生成基于时间戳的文件名
+    const timestampFilename = `${new Date().getTime()}${suffix}`;
+    const fullPath = path.join(fileDirectory, timestampFilename);
+    return fullPath;
   }
 }

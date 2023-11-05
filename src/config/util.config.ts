@@ -134,3 +134,4 @@ export type RequestOptions = {
   body?: any; //请求体
 };
 export const email = '3325246991_YRA3XX@kindle.com';
+export const PageTitle = 'I am sb';
