@@ -1,6 +1,7 @@
 import { HttpException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as dayjs from 'dayjs';
+
 //密码加密
 export function encryption(password: string) {
   return bcrypt.hashSync(password, 10);
@@ -121,3 +122,15 @@ export const errorResp = (e) => {
     message: e.response?.message || e,
   };
 };
+export enum requestMethod {
+  POST = 'post',
+  GET = 'get',
+}
+export type RequestOptions = {
+  url: string; //请求的URL地址
+  method: requestMethod; //请求的方法
+  json?: boolean; //JSON，希望返回的数据是一个JSON格式的
+  headers?: any;
+  body?: any; //请求体
+};
+export const email = '3325246991_YRA3XX@kindle.com';

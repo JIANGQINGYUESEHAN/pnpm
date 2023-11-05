@@ -71,6 +71,9 @@ dependencies:
   fastify:
     specifier: ^4.24.3
     version: registry.npmmirror.com/fastify@4.24.3
+  iconv-lite:
+    specifier: ^0.6.3
+    version: registry.npmmirror.com/iconv-lite@0.6.3
   jsonwebtoken:
     specifier: ^9.0.2
     version: registry.npmmirror.com/jsonwebtoken@9.0.2
@@ -104,6 +107,9 @@ dependencies:
   reflect-metadata:
     specifier: ^0.1.13
     version: registry.npmmirror.com/reflect-metadata@0.1.13
+  request:
+    specifier: ^2.88.2
+    version: registry.npmmirror.com/request@2.88.2
   request-promise:
     specifier: ^4.2.6
     version: registry.npmmirror.com/request-promise@4.2.6(request@2.88.2)
