@@ -11,6 +11,7 @@ import { AccessTokenConfig } from './config/util.config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import {
+  FileRepository,
   GoogleAuthInfoRepository,
   PostRepository,
   SubscribedsRepository,
@@ -26,6 +27,7 @@ import { subscribed } from './rss/subscribed/subscribed.entity';
 
 import { HttpModule } from '@nestjs/axios';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { FileEntity } from './entity/file.entity';
 export const jwtModuleRegister = (): JwtModuleOptions => {
   const config = AccessTokenConfig();
   const isProd = 'production';
@@ -44,7 +46,13 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
 @Module({
   imports: [
     DatabaseModule.forRoot(TypeOrmOptions()),
-    TypeOrmModule.forFeature([UserEntity, GoogleAuthInfo, subscribed, Post]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      GoogleAuthInfo,
+      subscribed,
+      Post,
+      FileEntity,
+    ]),
     GoogleModule,
     MailerModule.forRoot({
       transport: {
@@ -70,6 +78,7 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
       GoogleAuthInfoRepository,
       SubscribedsRepository,
       PostRepository,
+      FileRepository,
     ]),
   ],
   controllers: [...Object.values(controller)],
@@ -81,6 +90,7 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
       GoogleAuthInfoRepository,
       SubscribedsRepository,
       PostRepository,
+      FileRepository,
     ]),
   ],
   providers: [
@@ -105,4 +115,4 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

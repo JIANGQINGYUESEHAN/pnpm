@@ -153,7 +153,7 @@ export class WebService {
       console.log('文件写入成功');
 
       // 发送邮件（此处假设 emailService 是一个配置好的邮件服务实例）
-      await this.emailService.example(email, fullPath);
+      await this.emailService.example(email, fullPath, 'aaa');
       console.log(`邮件发送成功: ${email}`);
     } catch (error) {
       console.error('保存HTML文件或发送邮件时发生错误:', error);

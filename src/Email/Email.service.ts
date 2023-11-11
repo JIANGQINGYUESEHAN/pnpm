@@ -5,10 +5,8 @@ import * as fs from 'fs';
 export class EmailService {
   constructor(private readonly mailerService: MailerService) { }
 
-  public async example(email: string, filePath: string) {
+  public async example(email: string, filePath: string, name: string) {
     const data = await this.ReadFile(filePath);
-    console.log(data);
-
     this.mailerService
       .sendMail({
         to: email, // 收件人邮箱地址
@@ -17,7 +15,7 @@ export class EmailService {
         text: '请查看附件', // 邮件正文，纯文本内容
         attachments: [
           {
-            filename: filePath, // 附件文件名
+            filename: name, // 附件文件名
             content: data, // 文件内容
           },
         ],

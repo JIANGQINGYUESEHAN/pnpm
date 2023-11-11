@@ -85,3 +85,4 @@ export class urlDto {
   @IsString()
   url: string;
 }
+

@@ -10,18 +10,15 @@ export class EmailService {
     const result = await fs.readFileSync(
       path.join(process.cwd(), 'src/file/aaa.txt'),
       'utf-8',
-    );
-
-    console.log('执行之前');
+    )
     this.mailerService
       .sendMail({
         to: '3325246991_YRA3XX@kindle.com', // list of receivers
         from: '3325246991@qq.com', // sender address
         subject: '主题是键盘敲烂，月薪过万！！！', // Subject line
-        text: '请查看附件', //没用邮件中没有体现
         attachments: [
           {
-            filename: 'bbbb', // 附件文件名
+            name: 'bbbb.html', // 附件文件名
             content: result, // 文件内容
           },
         ],

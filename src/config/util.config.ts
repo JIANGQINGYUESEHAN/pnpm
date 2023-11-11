@@ -135,3 +135,8 @@ export type RequestOptions = {
 };
 export const email = '3325246991_YRA3XX@kindle.com';
 export const PageTitle = 'I am sb';
+export type UserSelect = {
+  username?: string;
+  email?: string;
+
+}

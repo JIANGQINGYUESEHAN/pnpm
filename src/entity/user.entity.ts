@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exclude, Expose } from 'class-transformer';
+import { FileEntity } from './file.entity';
 
 @Entity()
 export class UserEntity extends BaseEntity {
@@ -36,11 +38,14 @@ export class UserEntity extends BaseEntity {
   @Expose()
   @Column({ comment: '手机号' })
   phone: string;
-  @Column()
+  @Column({ default: false })
   photo: string;
 
   @Column({ default: false })
   admin: boolean;
+
+  @OneToMany(() => FileEntity, (file) => file.user)
+  file: string;
 
   @CreateDateColumn()
   createTime: string;

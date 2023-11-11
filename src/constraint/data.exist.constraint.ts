@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { Injectable } from '@nestjs/common';
 import {
   ValidationArguments,
@@ -15,7 +16,7 @@ type Condition = {
 @Injectable()
 @ValidatorConstraint({ name: 'DataExistConstraintAll', async: true })
 export class DataExistConstraintAll implements ValidatorConstraintInterface {
-  constructor(private dataSource: DataSource) {}
+  constructor(private dataSource: DataSource) { }
   async validate(value: any, args?: ValidationArguments) {
     let repo: Repository<any>;
     if (!value) return false;
@@ -44,6 +45,7 @@ export function DataExistConstraintById(
   param: Condition | ObjectType<any>,
   args?: ValidatorOptions,
 ) {
+
   return (obj: Record<string, any>, propertyName: any) => {
     registerDecorator({
       target: obj.constructor,
