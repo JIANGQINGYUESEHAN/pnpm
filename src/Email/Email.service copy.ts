@@ -5,15 +5,12 @@ import * as fs from 'fs';
 
 @Injectable()
 export class EmailService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(private readonly mailerService: MailerService) { }
   public async example() {
-    // let Path = path.join(process.cwd(), 'src/file/aaa.txt')
     const result = await fs.readFileSync(
       path.join(process.cwd(), 'src/file/aaa.txt'),
       'utf-8',
     );
-
-    console.log(result);
 
     console.log('执行之前');
     this.mailerService
@@ -24,7 +21,7 @@ export class EmailService {
         text: '请查看附件', //没用邮件中没有体现
         attachments: [
           {
-            filename: 'aaa.txt', // 附件文件名
+            filename: 'bbbb', // 附件文件名
             content: result, // 文件内容
           },
         ],

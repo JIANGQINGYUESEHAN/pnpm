@@ -50,8 +50,19 @@ export class WebService {
   WebAnalysis(data) {
     try {
       const $ = cheerio.load(data);
-      // 移除 'img' 从要抽取的标签列表
-      const tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li', 'ol', 'ul'];
+      const tags = [
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'p',
+        'li',
+        'ol',
+        'ul',
+        'img',
+      ];
       const tagsWithContentAndAttributes = [];
 
       function cleanText(text) {
@@ -82,7 +93,7 @@ export class WebService {
           const tagDetails = {
             tag: element.prop('tagName').toLowerCase(),
             content: getText(this),
-            attributes: getAttributes(this, ['href', 'title']), // 移除 'src' 和 'alt' 属性
+            attributes: getAttributes(this, ['href', 'title', 'src', 'alt']),
           };
           tagsWithContentAndAttributes.push(tagDetails);
         });
@@ -94,8 +105,7 @@ export class WebService {
   }
   formatElementsForHtml(elements) {
     try {
-      let htmlString =
-        '<!DOCTYPE html>\n<html>\n<head>\n<title>Document</title>\n</head>\n<body>\n';
+      let htmlString = '';
 
       elements.forEach((tag) => {
         // 打开标签
@@ -120,8 +130,6 @@ export class WebService {
         }
       });
 
-      htmlString += '\n</body>\n</html>'; // 结束 HTML 文档
-
       this.saveToHtmlFile(htmlString);
     } catch (error) {
       throw new HttpException('文本传输错误', 301);
@@ -130,8 +138,18 @@ export class WebService {
   async saveToHtmlFile(Text) {
     try {
       const fullPath = await this.createFullPath();
+      const str = `<!DOCTYPE html>
+      <html>
+      <head>
+      <title>${PageTitle}</title>
+      </head>
+      <body>
+      ${Text}
+      </body>
+      </html>
+      `;
       // 写入文件
-      fs.writeFileSync(fullPath, Text);
+      fs.writeFileSync(fullPath, str);
       console.log('文件写入成功');
 
       // 发送邮件（此处假设 emailService 是一个配置好的邮件服务实例）
