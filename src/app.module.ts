@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import TypeOrmOptions from './config/databas.option';
 import { DatabaseModule } from './module/database.moudle';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
@@ -24,7 +24,7 @@ import { GoogleModule } from './oauth/google/module/google.module';
 
 import { Post } from './rss/post/post.entity';
 import { subscribed } from './rss/subscribed/subscribed.entity';
-
+import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { FileEntity } from './entity/file.entity';
@@ -54,6 +54,7 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
       FileEntity,
     ]),
     GoogleModule,
+    ScheduleModule.forRoot(),
     MailerModule.forRoot({
       transport: {
         host: 'smtp.qq.com',
