@@ -6,7 +6,6 @@ import {
   ValidatorConstraintInterface,
   registerDecorator,
 } from 'class-validator';
-import { MessageType } from 'src/config/util.config';
 @Injectable()
 @ValidatorConstraint()
 export class IsEnumConstraint implements ValidatorConstraintInterface {

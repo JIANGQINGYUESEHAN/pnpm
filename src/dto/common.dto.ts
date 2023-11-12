@@ -1,5 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { IsString } from 'class-validator';
+import { TimeFormat } from 'src/config/util.config';
 import { DataExistConstraintById } from 'src/constraint/data.exist.constraint';
+import IsDefaultEnum from 'src/constraint/enum.constraint';
+import { IsRegular } from 'src/constraint/regular.constraint';
 import { DtoDecorator } from 'src/decorator/dto.decorator';
+
 import { FileEntity } from 'src/entity/file.entity';
 
 export class commonResponseDto {
@@ -11,4 +17,16 @@ export class commonResponseDto {
 export class FileIdDto {
   @DataExistConstraintById({ entity: FileEntity })
   id: string;
+}
+
+@DtoDecorator({ type: 'body' })
+export class TaskIntervalDto {
+  @IsRegular(
+    /^(http|https):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:/~+#]*[\w\-@?^=%&/~+#])?$/,
+  )
+  @IsString()
+  url: string;
+
+  @IsDefaultEnum(TimeFormat)
+  cycle: string;
 }

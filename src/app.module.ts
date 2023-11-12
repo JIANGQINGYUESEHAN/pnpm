@@ -12,16 +12,14 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import {
   FileRepository,
-  GoogleAuthInfoRepository,
   PostRepository,
   SubscribedsRepository,
   UserRepository,
 } from './repository/user.repository';
 import * as services from './service';
 import * as controller from './controller';
-import { GoogleAuthInfo } from './entity/google.entity';
-import { GoogleModule } from './oauth/google/module/google.module';
 
+import { GoogleModule } from './oauth/google/module/google.module';
 import { Post } from './rss/post/post.entity';
 import { subscribed } from './rss/subscribed/subscribed.entity';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -46,13 +44,7 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
 @Module({
   imports: [
     DatabaseModule.forRoot(TypeOrmOptions()),
-    TypeOrmModule.forFeature([
-      UserEntity,
-      GoogleAuthInfo,
-      subscribed,
-      Post,
-      FileEntity,
-    ]),
+    TypeOrmModule.forFeature([UserEntity, subscribed, Post, FileEntity]),
     GoogleModule,
     ScheduleModule.forRoot(),
     MailerModule.forRoot({
@@ -76,7 +68,7 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
     PassportModule,
     DatabaseModule.forRepository([
       UserRepository,
-      GoogleAuthInfoRepository,
+
       SubscribedsRepository,
       PostRepository,
       FileRepository,
@@ -88,7 +80,7 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
 
     DatabaseModule.forRepository([
       UserRepository,
-      GoogleAuthInfoRepository,
+
       SubscribedsRepository,
       PostRepository,
       FileRepository,

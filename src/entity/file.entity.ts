@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { Expose } from 'class-transformer';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { TimeFormat } from 'src/config/util.config';
 
 @Entity()
 export class FileEntity {
@@ -23,4 +24,13 @@ export class FileEntity {
     @ManyToOne(() => UserEntity, user => user.file)
     @JoinColumn({ name: 'user_id' })
     user: UserEntity;
+
+    @Column({ comment: '是否是被定时的条列', default: false })
+    IsSelect: boolean
+
+    @Column({ comment: '是否是被定时的条列', default: null })
+    TimeInterval: TimeFormat
+
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 }

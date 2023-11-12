@@ -1,4 +1,5 @@
 import {
+  IsDate,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -85,4 +86,3 @@ export class urlDto {
   @IsString()
   url: string;
 }
-

@@ -138,5 +138,9 @@ export const PageTitle = 'I am sb';
 export type UserSelect = {
   username?: string;
   email?: string;
+};
 
+export enum TimeFormat {
+  WEEK = 'week',
+  MONTH = 'month',
 }

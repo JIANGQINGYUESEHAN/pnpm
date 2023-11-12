@@ -41,8 +41,8 @@ export class UserEntity extends BaseEntity {
   @Column({ default: false })
   photo: string;
 
-  @Column({ default: false })
-  admin: boolean;
+  @Column({ default: false, comment: '是否为会员' })
+  IsVip: boolean;
 
   @OneToMany(() => FileEntity, (file) => file.user)
   file: string;
