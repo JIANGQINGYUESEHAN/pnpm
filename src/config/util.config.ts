@@ -1,6 +1,5 @@
 import { HttpException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import * as dayjs from 'dayjs';
 
 //密码加密
 export function encryption(password: string) {
@@ -45,83 +44,6 @@ export default class CommonException extends HttpException {
   }
 }
 
-export enum MessageType {
-  TEXT = 'TEXT',
-  IMAGE = 'IMAGE',
-  VIDEO = 'VIDEO',
-}
-export enum Type {
-  friend = 'friend',
-  group = 'group',
-}
-export type friendRecentChat = {
-  id: string | number;
-  avatarSrc: string;
-  name: string;
-  intro: string;
-  content: string;
-  contentType: MessageType;
-  time: string;
-  type: Type;
-  unreadCount: 0;
-};
-
-export type GroupRecentChat = {
-  id: string | number;
-  groupAvatarSrc: string;
-  groupName: string;
-  groupIntro: string;
-  userId: string;
-  userName: string;
-  userAvatarSrc: string;
-  content: string;
-  contentType: MessageType;
-  time: string;
-  type: Type;
-  unreadCount: 0;
-};
-//每两组生成唯一的id
-
-export const GenerateUniqueRoomId = (senderId, receiverId) => {
-  const [max, min] =
-    senderId > receiverId ? [senderId, receiverId] : [receiverId, senderId];
-
-  //通过Math生成
-  const str = String(Math.atan2(max, min));
-  return str.substring(2, 6);
-};
-
-export const formatTime = (time) => {
-  return dayjs(time).format('YYYY-MM-DD HH:mm');
-};
-
-export function getTimeDiff(time: string): string {
-  let res = '';
-  const diff = dayjs().diff(time, 'minutes');
-  if (diff < 60) {
-    res = diff + '分钟前';
-  } else if (diff > 60 && diff < 24 * 60) {
-    const diffs = Math.round(diff / 60);
-    res = diffs + '小时前';
-  } else if (diff > 24 * 60) {
-    const diffs = Math.round((diff / 24) * 60);
-    res = diffs + '天前';
-  }
-  return res;
-}
-
-//webSocket返回体
-
-export const successResp = (data, message = '成功') => {
-  return { code: StatusCode.Success, data: data, message };
-};
-export const errorResp = (e) => {
-  return {
-    code: StatusCode.Error,
-    data: null,
-    message: e.response?.message || e,
-  };
-};
 export enum requestMethod {
   POST = 'post',
   GET = 'get',
@@ -143,4 +65,17 @@ export type UserSelect = {
 export enum TimeFormat {
   WEEK = 'week',
   MONTH = 'month',
+}
+export function uuid() {
+  const s = [];
+  const hexDigits = '0123456789abcdef';
+  for (let i = 0; i < 36; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+  }
+  s[14] = '4'; // bits 12-15 of the time_hi_and_version field to 0010
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+  s[8] = s[13] = s[18] = s[23] = '-';
+
+  const uuid = s.join('');
+  return uuid;
 }

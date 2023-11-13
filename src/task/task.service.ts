@@ -6,10 +6,12 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 import { CronJob } from "cron";
 import * as  dayjs from "dayjs";
 import { TaskIntervalDto } from "src/dto/common.dto";
-import { WebService } from "src/service";
+import { EmailService, WebService } from "src/service";
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cheerio from 'cheerio';
+import { uuid } from "src/config/util.config";
+import { FileRepository } from "src/repository/user.repository";
 @Injectable()
 export class TaskService {
     protected title: string;
@@ -18,7 +20,9 @@ export class TaskService {
     protected UserId: string;
     constructor(
         private schedulerRegistry: SchedulerRegistry,
-        protected webService: WebService
+        protected webService: WebService,
+        protected emailService: EmailService,
+        protected fileRepository: FileRepository,
     ) { }
 
 
@@ -29,10 +33,10 @@ export class TaskService {
 
         //判断该用户的选择的定时任务的方式
         if (TimeSet.cycle === 'week') {
-            this.WeekInterval(userId, TimeSet)
+            this.WeekInterval(user, TimeSet)
         }
         if (TimeSet.cycle === 'month') {
-            this.MonthInterval(userId, TimeSet)
+            this.MonthInterval(user, TimeSet)
 
         }
     }
@@ -41,20 +45,20 @@ export class TaskService {
     WeekInterval(user, TimeSet) {
         //获取当前周几
         const now = dayjs().day() + 1;
-        console.log(now);
+        const name = uuid()
 
-        this.SetInterval('aaa1', async (user, TimeSet) => {
+        //先判断当前用户的当前网址的定时任务是否存在
+
+
+        this.SetInterval(name, async (user, TimeSet) => {
             //发送网址
             const data = await this.webService.WebRequest(TimeSet.url);
 
             const path = await this.WebAnalysis(data)
 
-            console.log(path);
 
             //存储数据
-
-            //那边我还的瞅一下，相同网址且相同地址的不进行增加
-
+            //发送信息
 
         }, [user, TimeSet], 2);
     }
@@ -195,6 +199,25 @@ export class TaskService {
         return {
             fullPath,
         };
+    }
+
+
+    //删除当前当前定时任务
+    //创建当前定时任务
+    //查看当前用户的定时任务的路径是否与之相同
+    async UserInterval(url, cycle, user) {
+        const result = await this.fileRepository
+            .createQueryBuilder()
+            .where({ url: url })
+            .andWhere({ TimeInterval: cycle })
+            .andWhere({ user })
+            .getOne()
+
+        if (result) {
+            return false
+        } else {
+            return true
+        }
     }
 
 }

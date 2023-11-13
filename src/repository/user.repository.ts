@@ -21,17 +21,4 @@ export class SubscribedsRepository extends Repository<subscribed> { }
 @CustomRepository(Post)
 export class PostRepository extends Repository<Post> { }
 @CustomRepository(FileEntity)
-export class FileRepository extends Repository<File> {
-  //查询当前用户的所有发送的文件
-  base() {
-    return this.createQueryBuilder();
-  }
-  //查询当前用户的所有发送的文件
-  async findCurrentFile(user: UserEntity) {
-    const result = await this.createQueryBuilder()
-      .where({ user: user })
-      .getMany();
-
-    return result;
-  }
-}
+export class FileRepository extends Repository<File> { }

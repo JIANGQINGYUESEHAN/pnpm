@@ -7,6 +7,7 @@ import { IsRegular } from 'src/constraint/regular.constraint';
 import { DtoDecorator } from 'src/decorator/dto.decorator';
 
 import { FileEntity } from 'src/entity/file.entity';
+import { UserEntity } from 'src/entity/user.entity';
 
 export class commonResponseDto {
   statusCode: any;
@@ -31,4 +32,8 @@ export class TaskIntervalDto {
   Date: number;
   @IsDefaultEnum(TimeFormat)
   cycle: string;
+  // @DataExistConstraintById({ entity: UserEntity })
+  @IsRegular(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+  @IsString()
+  email: string;
 }

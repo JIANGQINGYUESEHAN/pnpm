@@ -28,7 +28,7 @@ export class FileEntity {
     @Column({ comment: '是否是被定时的条列', default: false })
     IsSelect: boolean
 
-    @Column({ comment: '是否是被定时的条列', default: null })
+    @Column({ comment: '定时模式(周定时,月定时)', default: null })
     TimeInterval: TimeFormat
     @Column({ comment: '被定时名字', default: null })
     TimeSchedulerName: string
