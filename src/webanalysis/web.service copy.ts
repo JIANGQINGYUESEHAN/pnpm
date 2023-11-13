@@ -60,7 +60,7 @@ export class WebService {
   }
 
   // 解析网页
-  async WebAnalysis(data, IsSend = false) {
+  WebAnalysis(data) {
     try {
       const $ = cheerio.load(data);
       // 移除 'img' 从要抽取的标签列表
@@ -100,19 +100,12 @@ export class WebService {
           tagsWithContentAndAttributes.push(tagDetails);
         });
 
-      const path = await this.formatElementsForHtml(
-        tagsWithContentAndAttributes,
-        IsSend,
-      );
-
-      return path;
+      this.formatElementsForHtml(tagsWithContentAndAttributes);
     } catch (error) {
       console.error('Error processing HTML:', error);
     }
   }
-  async formatElementsForHtml(elements, IsSend) {
-
-
+  formatElementsForHtml(elements, IsSend = false) {
     try {
       let htmlString =
         '<!DOCTYPE html>\n<html>\n<head>\n<title>Document</title>\n</head>\n<body>\n';
@@ -142,14 +135,8 @@ export class WebService {
 
       htmlString += '\n</body>\n</html>'; // 结束 HTML 文档
 
-
       if (!IsSend) {
         this.saveToHtmlFile(htmlString);
-        return 1;
-      } else {
-        console.log(11);
-
-        return await this.CreateFile(htmlString);
       }
     } catch (error) {
       throw new HttpException('文本传输错误', 301);
@@ -158,13 +145,13 @@ export class WebService {
   //发送邮件
   async saveToHtmlFile(Text) {
     try {
-      // const fullPath = await this.createFullPath();
-      // // 写入文件
-      // fs.writeFileSync(fullPath, Text);
-      // if (!this.title) {
-      //   this.title = new Date().getTime().toString();
-      // }
-      const { fullPath } = await this.CreateFile(Text);
+      const fullPath = await this.createFullPath();
+      // 写入文件
+      fs.writeFileSync(fullPath, Text);
+      console.log('文件写入成功');
+      if (!this.title) {
+        this.title = new Date().getTime().toString();
+      }
       this.email = email;
       //调用方法进行存储
       await this.SendFileInfo(
@@ -177,6 +164,7 @@ export class WebService {
 
       // 发送邮件
       await this.emailService.example(email, fullPath, `${this.title}.html`);
+
 
       console.log(`邮件发送成功: ${email}`);
     } catch (error) {
@@ -303,18 +291,5 @@ export class WebService {
       .getMany();
 
     return Is.length > 0;
-  }
-
-  //生成文件
-  async CreateFile(Text) {
-    const fullPath = await this.createFullPath();
-    // 写入文件
-    fs.writeFileSync(fullPath, Text);
-    if (!this.title) {
-      this.title = new Date().getTime().toString();
-    }
-    return {
-      fullPath,
-    };
   }
 }
