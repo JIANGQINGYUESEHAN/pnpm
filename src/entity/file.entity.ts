@@ -30,7 +30,8 @@ export class FileEntity {
 
     @Column({ comment: '是否是被定时的条列', default: null })
     TimeInterval: TimeFormat
-
+    @Column({ comment: '被定时名字', default: null })
+    TimeSchedulerName: string
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 }

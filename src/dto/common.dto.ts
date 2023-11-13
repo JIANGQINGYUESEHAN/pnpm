@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { TimeFormat } from 'src/config/util.config';
 import { DataExistConstraintById } from 'src/constraint/data.exist.constraint';
 import IsDefaultEnum from 'src/constraint/enum.constraint';
@@ -26,7 +26,9 @@ export class TaskIntervalDto {
   )
   @IsString()
   url: string;
-
+  @IsNumber()
+  @IsRegular(/^(?:[0-9]|1[0-9]|2[0-4])$/)
+  Date: number;
   @IsDefaultEnum(TimeFormat)
   cycle: string;
 }

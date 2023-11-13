@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { HttpException, Injectable } from '@nestjs/common';
 import * as request from 'request';
@@ -195,20 +196,23 @@ export class WebService {
     try {
       // 获取当前用户
       const user = await this.findUser(userId);
-      // 对文件进行添加记录
-      const result = await this.fileRepository
-        .createQueryBuilder()
-        .insert()
-        .into(FileEntity)
-        .values({
-          title,
-          email,
-          url,
-          fileUrl: filePath,
-          user: user, // 假设您只需要传递用户ID
-        })
-        .execute();
-      return result;
+      //然后根据当前用户进行判重
+      if (!this.IsRepeat && !this.IsIntervalRepeat) {
+        // 对文件进行添加记录
+        const result = await this.fileRepository
+          .createQueryBuilder()
+          .insert()
+          .into(FileEntity)
+          .values({
+            title,
+            email,
+            url,
+            fileUrl: filePath,
+            user: user, // 假设您只需要传递用户ID
+          })
+          .execute();
+        return result;
+      }
     } catch (error) {
       console.error('发生错误:', error);
     }
@@ -260,5 +264,29 @@ export class WebService {
     } catch (error) {
       console.error('保存HTML文件或发送邮件时发生错误:', error);
     }
+  }
+  //简单判断 当前用户的网址是否重复(不是vip但网址重复)
+  async IsRepeat(user, url) {
+    const Is = await this.fileRepository
+      .createQueryBuilder('file')
+      .where('file.url = :url', { url })
+      .leftJoinAndSelect('file.user', 'user')
+      .andWhere('user.id = :userId', { id: user.id }) // 假设 user 对象有一个 id 属性
+      .andWhere('user.isVip = :isVip', { isVip: false })
+      .getMany();
+
+    return Is.length > 0;
+  }
+  //是 vip 网址也重复
+  async IsIntervalRepeat(user, url) {
+    const Is = await this.fileRepository
+      .createQueryBuilder('file')
+      .where('file.url = :url', { url })
+      .leftJoinAndSelect('file.user', 'user')
+      .andWhere('user.id = :userId', { id: user.id }) // 假设 user 对象有一个 id 属性
+      .andWhere('user.isVip = :isVip', { isVip: true })
+      .getMany();
+
+    return Is.length > 0;
   }
 }

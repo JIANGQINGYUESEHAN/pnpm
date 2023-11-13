@@ -42,7 +42,7 @@ export class UserEntity extends BaseEntity {
   photo: string;
 
   @Column({ default: false, comment: '是否为会员' })
-  IsVip: boolean;
+  isVip: boolean;
 
   @OneToMany(() => FileEntity, (file) => file.user)
   file: string;
