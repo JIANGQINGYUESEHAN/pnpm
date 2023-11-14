@@ -15,6 +15,7 @@ export class JwtGuard extends AuthGuard('jwt') {
     if (!token) return false;
 
     const IsTrue = this.tokenService.verifyAccessToken(token);
+
     return IsTrue;
   }
   protected getRespond(context: ExecutionContext) {

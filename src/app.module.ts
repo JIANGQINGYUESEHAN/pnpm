@@ -68,7 +68,6 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
     PassportModule,
     DatabaseModule.forRepository([
       UserRepository,
-
       SubscribedsRepository,
       PostRepository,
       FileRepository,

@@ -1,4 +1,8 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  HttpException,
+} from '@nestjs/common';
 import { ExtractJwt } from 'passport-jwt';
 import { AccessTokenConfig } from 'src/config/util.config';
 import * as jwt from 'jsonwebtoken';
@@ -16,7 +20,7 @@ export const LoggedUser = createParamDecorator(
         id: obj.sub,
       };
     } catch (error) {
-      throw new Error('请先登录');
+      throw new HttpException('请先登录', 302);
     }
   },
 );

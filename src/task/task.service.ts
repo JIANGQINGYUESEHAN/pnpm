@@ -12,12 +12,12 @@ import * as path from 'path';
 import * as cheerio from 'cheerio';
 import { uuid } from "src/config/util.config";
 import { FileRepository } from "src/repository/user.repository";
+import { FileEntity } from "src/entity/file.entity";
+import { email } from '../config/util.config';
+
 @Injectable()
 export class TaskService {
     protected title: string;
-    protected url: string;
-    protected email: string;
-    protected UserId: string;
     constructor(
         private schedulerRegistry: SchedulerRegistry,
         protected webService: WebService,
@@ -29,46 +29,97 @@ export class TaskService {
     async handleInterval(userId, TimeSet: TaskIntervalDto) {
         //获取用户信息
         const user = await this.webService.findUser(userId)
-
+        //先判断当前任务是否存在
 
         //判断该用户的选择的定时任务的方式
         if (TimeSet.cycle === 'week') {
-            this.WeekInterval(user, TimeSet)
+            const name = uuid()
+            this.WeekInterval(user, TimeSet, name)
         }
         if (TimeSet.cycle === 'month') {
-            this.MonthInterval(user, TimeSet)
+            const name = uuid()
+            this.MonthInterval(user, TimeSet, name)
 
         }
     }
 
     //周定时
-    WeekInterval(user, TimeSet) {
+    WeekInterval(user, TimeSet, name) {
         //获取当前周几
         const now = dayjs().day() + 1;
-        const name = uuid()
+
 
         //先判断当前用户的当前网址的定时任务是否存在
 
 
         this.SetInterval(name, async (user, TimeSet) => {
-            //发送网址
-            const data = await this.webService.WebRequest(TimeSet.url);
+            try {
 
-            const path = await this.WebAnalysis(data)
+                await this.SpecificProcess(user, name, TimeSet)
 
 
-            //存储数据
-            //发送信息
+            } catch (error) {
+                throw new HttpException("定时任务设置失败，请重试", 301)
+            }
 
-        }, [user, TimeSet], 2);
+
+
+        }, [user, TimeSet, path], '*', '*', TimeSet.Date, '*', '*', now);
     }
     //月定时
-    MonthInterval(user, TimeSet: TaskIntervalDto) {
+    MonthInterval(user, TimeSet: TaskIntervalDto, name) {
         //获取当前是一个月的几号
         const now = dayjs().date();
-        console.log(now);
-    }
+        this.SetInterval(name, async (user, TimeSet) => {
+            try {
+                await this.SpecificProcess(user, name, TimeSet)
 
+
+            } catch (error) {
+                throw new HttpException("定时任务设置失败，请重试", 301)
+            }
+
+
+
+        }, [user, TimeSet, path], '*', '*', TimeSet.Date, now, '*', '*');
+    }
+    //定时任务具体流程
+    async SpecificProcess(user, name, TimeSet) {
+
+
+
+
+        //根据当前网址的任务是否存在如果是就直接发送不要直接保存不走流程了
+        if (!await this.IntervalExist(TimeSet.url, TimeSet.cycle, user)) {
+            const result = await this.InterValDetail(TimeSet.url, TimeSet.cycle, user)
+
+            this.emailService.example((result as any).email, (result as any).fileUrl, `定时任务${(result as any).title}.html`)
+            return;
+        } else {
+            //发送网址
+            const data = await this.webService.WebRequest(TimeSet.url);
+            const { fullPath } = await this.WebAnalysis(data)
+
+            //存储数据
+            const result = this.fileRepository.createQueryBuilder()
+                .insert()
+                .into(FileEntity)
+                .values({
+                    user,
+                    fileUrl: fullPath,
+                    email: TimeSet.email,
+                    title: this.title,
+                    TimeSchedulerName: name,
+                    TimeInterval: TimeSet.cycle,
+                    url: TimeSet.url
+
+                })
+                .execute();
+
+            //邮件发送请求
+            await this.emailService.example(TimeSet.email, fullPath, `定时任务${this.title}.html`)
+        }
+    }
     /**
      * 
      * @param name 定时任务的名字
@@ -91,7 +142,6 @@ export class TaskService {
             console.error(error);
         }
     }
-
     async WebAnalysis(data) {
 
         try {
@@ -201,9 +251,6 @@ export class TaskService {
         };
     }
 
-
-    //删除当前当前定时任务
-    //创建当前定时任务
     //查看当前用户的定时任务的路径是否与之相同
     async UserInterval(url, cycle, user) {
         const result = await this.fileRepository
@@ -218,6 +265,54 @@ export class TaskService {
         } else {
             return true
         }
+    }
+
+    //查看定时任务是否存在
+    async IntervalExist(url, cycle, user) {
+        const result = await this.fileRepository
+            .createQueryBuilder()
+            .where({ url: url })
+            .andWhere({ TimeInterval: cycle })
+            .andWhere({ user })
+            .getOne()
+
+        if (result) {
+            return false
+        } else {
+            return true
+        }
+    }
+    //根据网址查询网址的具体信息
+    async InterValDetail(url, cycle, user) {
+        try {
+            const result = await this.fileRepository
+                .createQueryBuilder()
+                .where({ url: url })
+                .andWhere({ TimeInterval: cycle })
+                .andWhere({ user })
+                .getOne()
+            if (result) {
+                return result
+            }
+        } catch (error) {
+            throw new HttpException("查询错误请重试", 301)
+        }
+    }
+    //删除当前当前定时任务
+    async UserIntervalDelete() {
+
+    }
+
+    //查看当前用户的所有定时任务
+    async FindUserInterval(userId) {
+        const user = await this.webService.findUser(userId)
+        const result = await this.fileRepository
+            .createQueryBuilder("task")
+            .where({ user: user })
+            .andWhere("task.TimeInterval IS NOT NULL")
+            .getMany();
+
+        return result;
     }
 
 }

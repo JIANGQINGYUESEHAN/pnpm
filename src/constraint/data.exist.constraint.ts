@@ -19,6 +19,8 @@ export class DataExistConstraintAll implements ValidatorConstraintInterface {
   constructor(private dataSource: DataSource) { }
   async validate(value: any, args?: ValidationArguments) {
     let repo: Repository<any>;
+
+
     if (!value) return false;
     //map 默认为id
     let map = 'id';

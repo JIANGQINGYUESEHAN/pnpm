@@ -28,7 +28,7 @@ export class EmailService {
       });
     console.log('执行之后');
   }
-  async ReadFile(url) {
+  private async ReadFile(url) {
     const data = await fs.readFileSync(url);
     return data;
   }

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Body } from '@nestjs/common';
 import { IsNumber, IsString } from 'class-validator';
 import { TimeFormat } from 'src/config/util.config';
 import { DataExistConstraintById } from 'src/constraint/data.exist.constraint';
@@ -7,7 +8,6 @@ import { IsRegular } from 'src/constraint/regular.constraint';
 import { DtoDecorator } from 'src/decorator/dto.decorator';
 
 import { FileEntity } from 'src/entity/file.entity';
-import { UserEntity } from 'src/entity/user.entity';
 
 export class commonResponseDto {
   statusCode: any;
@@ -36,4 +36,10 @@ export class TaskIntervalDto {
   @IsRegular(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
   @IsString()
   email: string;
+}
+@DtoDecorator({ type: 'param' })
+export class IdDto {
+  @DataExistConstraintById(FileEntity)
+  @IsString()
+  id: string;
 }
