@@ -299,8 +299,25 @@ export class TaskService {
         }
     }
     //删除当前当前定时任务
-    async UserIntervalDelete() {
+    async UserIntervalDelete(id) {
+        if (!id) {
+            // Handle the case where id is null, undefined, or invalid
+            throw new HttpException("Invalid ID provided", 301);
+        }
 
+        try {
+            const result = await this.fileRepository
+                .createQueryBuilder("task")
+                .delete()
+                .where({ id: id })
+                .execute();
+
+            // Optionally, return some information about the operation
+            return result;
+        } catch (error) {
+            // Handle or log the error
+            throw new Error("Error occurred during deletion");
+        }
     }
 
     //查看当前用户的所有定时任务

@@ -30,12 +30,9 @@ export class TaskController {
     }
     @UseGuards(JwtGuard)
     @Get('/delete/:id')
-    UserIntervalDelete(@Param() id: IdDto) {
-        console.log(id);
+    UserIntervalDelete(@Param() Id: IdDto) {
 
-
-        // return this.TaskService.FindUserInterval(UserId.id)
-
+        return this.TaskService.UserIntervalDelete(Id.id)
     }
 
 
