@@ -11,6 +11,7 @@ import { TokenService } from './token.service';
 import * as dayjs from 'dayjs';
 import { UpdateResult } from 'typeorm';
 import CommonException from 'src/config/util.config';
+import { UserEntity } from 'src/entity/user.entity';
 @Injectable()
 export class UserService {
   constructor(
@@ -119,5 +120,24 @@ export class UserService {
 
     if (!(item && item.id)) throw new CommonException('获取失败 请重新输入');
     return item;
+  }
+  //将普通用户变为vip
+  async ChangeVip(id) {
+    try {
+      const result = this.userRepository
+        .createQueryBuilder()
+        .update(UserEntity)
+        .set({ isVip: true })
+        .where({ id })
+        .execute();
+    } catch (error) { }
+  }
+  //查看所有vip
+  FindAllVip() {
+    const result = this.userRepository
+      .createQueryBuilder('user')
+      .where('user.isVip IS NOT NULL')
+      .getMany();
+    return result;
   }
 }

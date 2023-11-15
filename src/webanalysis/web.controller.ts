@@ -1,12 +1,14 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { urlDto } from 'src/dto/user.dto';
 import { WebService } from './web.service';
 import { LoggedUser } from 'src/decorator/user.decorator';
 import { FileIdDto } from 'src/dto/common.dto';
+import { VipGuard } from 'src/guard/vip.guard';
 
 @Controller('/webanalysis')
 export class WebController {
   constructor(protected readonly webService: WebService) { }
+  @UseGuards(VipGuard)
   @Post()
   webAnalysis(@Body() url: urlDto, @LoggedUser() UserId) {
     this.webService.AnalysisWeb(url.url, UserId);

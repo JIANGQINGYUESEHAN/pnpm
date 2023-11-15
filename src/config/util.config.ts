@@ -79,3 +79,7 @@ export function uuid() {
   const uuid = s.join('');
   return uuid;
 }
+export const VipNumber = 300;
+export const CommonNumber = 200;
+export const TaskVipNumber = 30;
+export const TaskCommonNumber = 20;
