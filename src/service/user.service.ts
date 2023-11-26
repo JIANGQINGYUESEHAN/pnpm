@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import {
   LoginDto,
   RegisterUserDto,
@@ -28,19 +28,24 @@ export class UserService {
   }
   //登录
   async login(loginDto: LoginDto) {
-    //跟据 username 查询 数据 和密码 对比密码  返回token
-    const result = await this.userRepository
-      .createQueryBuilder('user')
-      .where({ username: loginDto.username })
-      .getOne();
-    //比较密码
+    try {
+      //跟据 username 查询 数据 和密码 对比密码  返回token
+      const result = await this.userRepository
+        .createQueryBuilder('user')
+        .where({ username: loginDto.username })
+        .getOne();
+      //比较密码
+      console.log(result);
 
-    if (!result) return '请输入正确的账号和密码';
-    //返回token
-    const now = dayjs();
-    const token = await this.tokenService.generateAccessToken(result, now);
+      if (!result) {
+        throw new HttpException('密码或者账户错误,请重新登录', 201);
+      }
+      //返回token
+      const now = dayjs();
+      const token = await this.tokenService.generateAccessToken(result, now);
 
-    return token;
+      return token;
+    } catch (error) { }
   }
   //跟新用户
   async UpdateUser(updateDto: UpdateDto, userId: string) {
@@ -130,6 +135,7 @@ export class UserService {
         .set({ isVip: true })
         .where({ id })
         .execute();
+      console.log(result);
     } catch (error) { }
   }
   //查看所有vip

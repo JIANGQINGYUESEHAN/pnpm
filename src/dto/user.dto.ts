@@ -1,12 +1,4 @@
-import {
-  IsDate,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Length,
-  isString,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 import { DataExist } from 'src/constraint/exist.constraint';
 import { IsRegular } from 'src/constraint/regular.constraint';
 import { IsUnique } from 'src/constraint/unique.constraint';
@@ -23,8 +15,8 @@ export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   @IsUnique({ entity: UserEntity })
-  @IsRegular(/^1[3-9]\d{9}$/)
-  phone: string;
+  @IsRegular(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+  email: string;
   @IsString()
   @IsNotEmpty()
   //判断是否符合条件
@@ -40,7 +32,7 @@ export class LoginDto {
   @DataExist({ entity: UserEntity })
   username: string;
 
-  @IsRegular(/^[a-zA-Z0-9]{8}$/)
+  @IsRegular(/^[A-Za-z0-9]{8}$/)
   @IsString()
   @IsNotEmpty({ message: '密码不为空' })
   password: string;

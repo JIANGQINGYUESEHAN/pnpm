@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import {
   ValidationArguments,
   ValidatorConstraint,
@@ -37,9 +37,14 @@ export class DataExistConstraintAll implements ValidatorConstraintInterface {
 
   defaultMessage(args: ValidationArguments): string {
     if (!args.constraints[0]) {
-      return 'Model not been specified!';
+      throw new HttpException('Model not been specified!', 201);
+      //return 'Model not been specified!';
     }
-    return `All instance of ${args.constraints[0].name} must been exists in databse!`;
+    throw new HttpException(
+      `All instance of ${args.constraints[0].name} must been exists in databse!`,
+      201,
+    );
+    // return;
   }
 }
 

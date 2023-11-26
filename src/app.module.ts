@@ -7,7 +7,7 @@ import { AppPipe } from './pipe/app.pipe';
 import { AppFilter } from './filter/httpexception.filter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
-import { AccessTokenConfig } from './config/util.config';
+import { AccessTokenConfig, Email } from './config/util.config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import {
@@ -26,6 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { FileEntity } from './entity/file.entity';
+import { AppInterceptor } from './interceptor/app.intercepter';
 export const jwtModuleRegister = (): JwtModuleOptions => {
   const config = AccessTokenConfig();
   const isProd = 'production';
@@ -54,12 +55,12 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
         ignoreTLS: true,
         secure: false,
         auth: {
-          user: '3325246991@qq.com',
-          pass: 'fenrcqgaunnodbcg',
+          user: Email().user,
+          pass: Email().pass,
         },
       },
       defaults: {
-        from: '3325246991@qq.com',
+        from: Email().from,
       },
       preview: false,
     }),
@@ -104,6 +105,10 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
     {
       provide: APP_FILTER,
       useClass: AppFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AppInterceptor,
     },
   ],
 })

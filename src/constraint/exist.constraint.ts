@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { HttpException, Injectable } from '@nestjs/common';
 import {
   ValidationArguments,
   ValidatorConstraint,
@@ -17,7 +18,7 @@ type Condition = {
 @ValidatorConstraint({ name: 'DataExist', async: true })
 @Injectable()
 export class DataExistConstraint implements ValidatorConstraintInterface {
-  constructor(protected dataSource: DataSource) {}
+  constructor(protected dataSource: DataSource) { }
   async validate(value: any, args?: ValidationArguments) {
     const config: Omit<Condition, 'entity'> = {
       //获取属性名
@@ -49,12 +50,15 @@ export class DataExistConstraint implements ValidatorConstraintInterface {
     const { entity, property } = args.constraints[0];
     const queryProperty = property ?? args.property;
     if (!(args.object as any).getManager) {
-      return 'getManager function not been found!';
+      throw new HttpException('getManager function not been found!', 201);
+      // return 'getManager function not been found!';
     }
     if (!entity) {
-      return 'Model not been specified!';
+      //  return '';
+      throw new HttpException('Model not been specified!', 201);
     }
-    return `${queryProperty} of ${entity.name} must been unique!`;
+    throw new HttpException(`${queryProperty} of ${entity.name} must been unique!`, 201);
+    // return `${queryProperty} of ${entity.name} must been unique!`;
   }
 }
 export function DataExist(

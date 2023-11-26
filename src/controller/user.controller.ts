@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpStatus,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -19,7 +18,7 @@ import { UserService } from 'src/service';
 
 @Controller('/users')
 export class UserController {
-  constructor(protected userService: UserService) {}
+  constructor(protected userService: UserService) { }
   @Post('/register')
   @HttpCode(200)
   register(@Body() registerUserDto: RegisterUserDto) {
@@ -31,6 +30,11 @@ export class UserController {
     console.log(loginDto);
 
     return this.userService.login(loginDto);
+  }
+  @Get('/loginw')
+  @HttpCode(200)
+  loginw() {
+    return 1;
   }
 
   //更新用户

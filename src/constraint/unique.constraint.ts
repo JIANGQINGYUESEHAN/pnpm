@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import {
   ValidationArguments,
   ValidationOptions,
@@ -17,7 +17,7 @@ type Condition = {
 @ValidatorConstraint({ name: 'IsUnique', async: true })
 @Injectable()
 export class IsUniqueConstraint implements ValidatorConstraintInterface {
-  constructor(protected dataSource: DataSource) {}
+  constructor(protected dataSource: DataSource) { }
   async validate(value: any, args?: ValidationArguments) {
     const config: Omit<Condition, 'entity'> = {
       //代表要验证的属性的名称。
@@ -29,9 +29,9 @@ export class IsUniqueConstraint implements ValidatorConstraintInterface {
     const condition = ('entity' in args.constraints[0]
       ? merge(config, args.constraints[0])
       : {
-          ...config,
-          entity: args.constraints[0],
-        }) as unknown as Required<Condition>;
+        ...config,
+        entity: args.constraints[0],
+      }) as unknown as Required<Condition>;
 
     //在判断有没有
     if (!condition.entity) {
@@ -55,9 +55,14 @@ export class IsUniqueConstraint implements ValidatorConstraintInterface {
     const queryProperty = property ?? args.property;
 
     if (!entity) {
-      return 'Model not been specified!';
+      throw new HttpException('Model not been specified!', 201);
+      // return 'Model not been specified!';
     }
-    return `${queryProperty} of ${entity.username} must been unique!`;
+    throw new HttpException(
+      `${queryProperty} of ${entity.username} must been unique!`,
+      201,
+    );
+    // return `${queryProperty} of ${entity.username} must been unique!`;
   }
 }
 // param: ObjectType<any> | Condition：这是用于指定要验证的实体类或验证条件对象的参数。它可以是一个实体类的类型（ObjectType<any>），也可以是一个验证条件对象（Condition）。

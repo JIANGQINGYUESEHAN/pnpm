@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import {
   ValidationArguments,
   ValidationOptions,
@@ -29,8 +29,10 @@ export class IsEnumConstraint implements ValidatorConstraintInterface {
   defaultMessage(args?: ValidationArguments): string {
     const Enum = args.constraints[0];
     if (typeof Enum == 'undefined') {
-      return '请输入具体判断enum';
+      throw new HttpException('请输入具体判断enum', 201);
+      //return '请输入具体判断enum';
     }
+    throw new HttpException('请输入具体判断enum', 201);
   }
 }
 

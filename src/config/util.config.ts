@@ -83,3 +83,15 @@ export const VipNumber = 300;
 export const CommonNumber = 200;
 export const TaskVipNumber = 30;
 export const TaskCommonNumber = 20;
+type emailType = {
+  user: string;
+  pass: string;
+  from: string;
+};
+export function Email(): emailType {
+  return {
+    user: '3325246991@qq.com',
+    pass: 'fenrcqgaunnodbcg',
+    from: '3325246991@qq.com',
+  };
+}

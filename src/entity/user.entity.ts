@@ -32,13 +32,13 @@ export class UserEntity extends BaseEntity {
   intro: string;
 
   @Expose()
-  @Column({ default: '' })
+  @Column({ comment: '邮箱' })
   email: string;
 
   @Expose()
-  @Column({ comment: '手机号' })
+  @Column({ comment: '手机号', default: '' })
   phone: string;
-  @Column({ default: false })
+  @Column({ default: '' })
   photo: string;
 
   @Column({ default: false, comment: '是否为会员' })
