@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpException, Injectable } from '@nestjs/common';
 import {
   ValidationArguments,

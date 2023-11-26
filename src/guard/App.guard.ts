@@ -1,4 +1,5 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { ExecutionContext, HttpException, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ExtractJwt } from 'passport-jwt';
 import { TokenService } from 'src/service';
@@ -8,13 +9,18 @@ export class JwtGuard extends AuthGuard('jwt') {
   constructor(protected tokenService: TokenService) {
     super();
   }
-  canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext) {
     const request = this.getRequest(context);
 
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-    if (!token) return false;
 
-    const IsTrue = this.tokenService.verifyAccessToken(token);
+
+    if (!token) {
+      throw new HttpException('验证失败', 203);
+    }
+
+    const IsTrue = await this.tokenService.verifyAccessToken(token);
+
 
     return IsTrue;
   }

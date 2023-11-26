@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/repository/user.repository';
 import * as dayjs from 'dayjs';
 import { UserEntity } from 'src/entity/user.entity';
@@ -10,7 +10,7 @@ export class TokenService {
   constructor(
     protected userRepository: UserRepository,
     protected jwtService: JwtService,
-  ) {}
+  ) { }
   //生成token
   async generateAccessToken(user: UserEntity, now: dayjs.Dayjs) {
     const config = AccessTokenConfig();
@@ -23,9 +23,13 @@ export class TokenService {
   }
   //验证token
   async verifyAccessToken(token) {
-    const config = AccessTokenConfig();
-    const result = jwt.verify(token, config.TokenConfig.secret);
-    if (!result) return false;
-    return true;
+    try {
+      const config = AccessTokenConfig();
+      const result = jwt.verify(token, config.TokenConfig.secret);
+      if (!result) return false;
+      return true;
+    } catch (error) {
+      throw new HttpException('验证失败', 201);
+    }
   }
 }

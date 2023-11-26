@@ -95,3 +95,9 @@ export function Email(): emailType {
     from: '3325246991@qq.com',
   };
 }
+
+//邮件验证地址
+const baseUrl = 'http://localhost:3001/verify';
+export const verifyUrl = function (token: any) {
+  return `${baseUrl}?token=${token}`;
+}

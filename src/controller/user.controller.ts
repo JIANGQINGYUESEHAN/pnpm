@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ReqUser } from 'src/decorator/requser.decorator';
@@ -27,14 +28,14 @@ export class UserController {
   @Post('/login')
   @HttpCode(200)
   login(@Body() loginDto: LoginDto) {
-    console.log(loginDto);
 
     return this.userService.login(loginDto);
   }
-  @Get('/loginw')
-  @HttpCode(200)
-  loginw() {
-    return 1;
+  @Get('verify')
+  async verifyEmail(@Query('token') token: string) {
+
+    // 验证令牌并更新用户状态
+    return await this.userService.verifyTokenAndCreateUser(token);
   }
 
   //更新用户
@@ -55,8 +56,7 @@ export class UserController {
     @Body() updatePassword: UpdatePasswordDto,
     @ReqUser() userId,
   ) {
-    console.log(userId);
-    console.log(updatePassword);
+
     //获取 原来的密码
     return this.userService.fixPassword(updatePassword, userId);
   }
@@ -64,7 +64,9 @@ export class UserController {
   @UseGuards(JwtGuard)
   @Get('/detail')
   @HttpCode(200)
-  GetDetail(@ReqUser() userId) {
-    return this.userService.GetDetail(userId);
+  async GetDetail(@ReqUser() userId) {
+
+
+    return await this.userService.GetDetail(userId);
   }
 }

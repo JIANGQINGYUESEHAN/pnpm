@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import {
   LoginDto,
   RegisterUserDto,
@@ -18,7 +18,6 @@ import { EmailService } from 'src/Email/Email.service';
 @Injectable()
 export class UserService {
   protected tokens = [];
-  protected registerUser: RegisterUserDto = null;
   constructor(
     protected userRepository: UserRepository,
     protected tokenService: TokenService,
@@ -27,56 +26,39 @@ export class UserService {
   //注册用户
   async register(registerUserDto: RegisterUserDto) {
     try {
-      this.registerUser = registerUserDto;
-      // 生成验证令牌
+      //先验证邮件
       const token = uuid();
       this.tokens.push(token);
 
-      // 发送验证邮件
       await this.emailService.sendVerificationEmail(
         registerUserDto.email,
         token,
       );
 
-      // 保存用户数据到临时存储，或返回足够的信息以供后续创建用户使用
-      // 例如，可以返回 token 或存储在内存中的对象的引用
-      return { token, message: '请验证您的邮箱' };
-    } catch (error) {
-      throw new HttpException(
-        '注册过程中出现错误',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+
+      const item = await this.userRepository.save(registerUserDto, {
+        reload: true,
+      });
+      if (isNil(item)) {
+        throw new HttpException('注册失败', 201);
+      }
+      return '注册成功';
+    } catch (error) { }
   }
-  async verifyTokenAndCreateUser(receivedToken: string) {
+  verifyToken(receivedToken: string) {
     try {
       const tokenIndex = this.tokens.indexOf(receivedToken);
 
       if (tokenIndex > -1) {
-        // 删除验证过的令牌
-        this.tokens.splice(tokenIndex, 1);
-
-        // 验证成功后创建用户
-        const user = await this.userRepository.save(this.registerUser, {
-          reload: true,
-        });
-        if (!user) {
-          throw new HttpException(
-            '创建用户失败',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-        }
-
-        return { success: true, message: '用户注册成功' };
+        this.tokens.splice(tokenIndex, 1); // 如果找到了令牌，删除它
+        return { success: true, message: 'Token verified successfully.' };
       } else {
-        throw new HttpException('无效或过期的令牌', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          { success: false, message: 'Invalid or expired token.' },
+          201,
+        ); // 令牌不存在，返回错误
       }
-    } catch (error) {
-      throw new HttpException(
-        '验证过程中出现错误',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    } catch (error) { }
   }
   //登录
   async login(loginDto: LoginDto) {
@@ -100,12 +82,7 @@ export class UserService {
   }
   //跟新用户
   async UpdateUser(updateDto: UpdateDto, userId: string) {
-    console.log(userId);
-    //       createQueryBuilder()
-    // .update(User)
-    // .set({ firstName: "Timber", lastName: "Saw" })
-    // .where("id = :id", { id: 1 })
-    // .execute();
+
     try {
       // 获取qb
       const qb = await this.userRepository.createQueryBuilder();
@@ -141,9 +118,8 @@ export class UserService {
     try {
       // 获取qb
       const qb = await this.userRepository.createQueryBuilder();
-      // console.log(qb); // 打印生成的 SQL 查询语句，用于调试
-      //return qb
-      //   // 进行更新操作
+
+      // 进行更新操作
       const result: UpdateResult = await qb
         .update()
         .set({ password: oldPassword.newPassword })

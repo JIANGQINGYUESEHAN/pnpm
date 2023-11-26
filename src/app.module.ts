@@ -106,10 +106,6 @@ export const jwtModuleRegister = (): JwtModuleOptions => {
       provide: APP_FILTER,
       useClass: AppFilter,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: AppInterceptor,
-    },
   ],
 })
 export class AppModule { }
