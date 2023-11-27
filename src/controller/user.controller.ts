@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
   Controller,
@@ -14,6 +15,7 @@ import {
   RegisterUserDto,
   UpdateDto,
   UpdatePasswordDto,
+  userExistDto,
 } from 'src/dto/user.dto';
 import { JwtGuard } from 'src/guard/App.guard';
 import { UserService } from 'src/service';
@@ -29,12 +31,10 @@ export class UserController {
   @Post('/login')
   @HttpCode(200)
   login(@Body() loginDto: LoginDto) {
-
     return this.userService.login(loginDto);
   }
   @Get('/verify/:token')
   async verifyEmail(@Param('token') token: string) {
-
     // 验证令牌并更新用户状态
     return await this.userService.verifyTokenAndCreateUser(token);
   }
@@ -57,7 +57,6 @@ export class UserController {
     @Body() updatePassword: UpdatePasswordDto,
     @ReqUser() userId,
   ) {
-
     //获取 原来的密码
     return this.userService.fixPassword(updatePassword, userId);
   }
@@ -66,8 +65,14 @@ export class UserController {
   @Get('/detail')
   @HttpCode(200)
   async GetDetail(@ReqUser() userId) {
-
-
     return await this.userService.GetDetail(userId);
+  }
+  //查询该用户是否存在
+  @Post('/exist')
+  @HttpCode(200)
+  async GetEXist(@Body() userExist: userExistDto) {
+    console.log(await this.userService.UserExist(userExist));
+
+    return await this.userService.UserExist(userExist);
   }
 }

@@ -5,6 +5,7 @@ import {
   RegisterUserDto,
   UpdateDto,
   UpdatePasswordDto,
+  userExistDto,
 } from 'src/dto/user.dto';
 import { UserRepository } from 'src/repository/user.repository';
 import { isNil } from 'lodash';
@@ -14,6 +15,7 @@ import { UpdateResult } from 'typeorm';
 import CommonException, { uuid } from 'src/config/util.config';
 import { UserEntity } from 'src/entity/user.entity';
 import { EmailService } from 'src/Email/Email.service';
+import { email } from '../config/util.config';
 interface UserToken {
   token: string;
   registerUser: RegisterUserDto;
@@ -28,8 +30,6 @@ export class UserService {
   ) { }
   //注册用户
   async register(registerUserDto: RegisterUserDto) {
-
-
     try {
       // 生成验证令牌
       const token = uuid();
@@ -43,8 +43,6 @@ export class UserService {
 
       return { token, message: '请验证您的邮箱' };
     } catch (error) {
-
-
       throw new HttpException(
         '注册过程中出现错误',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -52,7 +50,6 @@ export class UserService {
     }
   }
   async verifyTokenAndCreateUser(receivedToken: string) {
-
     try {
       //获取当前token
       const verifyToken = this.userToken.find((item) => {
@@ -208,5 +205,26 @@ export class UserService {
       .where('user.isVip IS NOT NULL')
       .getMany();
     return result;
+  }
+  //查询该用户
+  async UserExist(userExist: userExistDto) {
+    try {
+      //跟据 username 查询 数据 和密码 对比密码  返回token
+      const result = await this.userRepository
+        .createQueryBuilder('user')
+        .where({ username: userExist.username })
+        .andWhere({ email: userExist.email })
+        .getOne();
+
+
+      if (result == null) {
+        return {
+          msg: '请验证邮箱',
+          code: 201,
+
+        };
+      }
+      return true;
+    } catch (error) { }
   }
 }

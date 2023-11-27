@@ -5,6 +5,7 @@ import { IsUnique } from 'src/constraint/unique.constraint';
 import { DtoDecorator } from 'src/decorator/dto.decorator';
 import { UserEntity } from 'src/entity/user.entity';
 
+
 @DtoDecorator({ type: 'body' })
 export class RegisterUserDto {
   @IsString()
@@ -77,4 +78,14 @@ export class urlDto {
   )
   @IsString()
   url: string;
+}
+export class userExistDto {
+  @IsNotEmpty({ message: '用户名不为空' })
+  @IsString({ message: '字符串' })
+  username: string;
+
+  @IsRegular(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
+  @IsString()
+  @IsNotEmpty({ message: '邮件不为空' })
+  email: string;
 }

@@ -50,8 +50,8 @@ export class DataExistConstraint implements ValidatorConstraintInterface {
     const { entity, property } = args.constraints[0];
     const queryProperty = property ?? args.property;
     if (!(args.object as any).getManager) {
-      throw new HttpException('getManager function not been found!', 201);
-      // return 'getManager function not been found!';
+      //throw new HttpException('getManager function not been found!', 201);
+      return 'getManager function not been found!';
     }
     if (!entity) {
       //  return '';
