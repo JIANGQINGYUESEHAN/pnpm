@@ -14,11 +14,13 @@ import { UpdateResult } from 'typeorm';
 import CommonException, { uuid } from 'src/config/util.config';
 import { UserEntity } from 'src/entity/user.entity';
 import { EmailService } from 'src/Email/Email.service';
-
+interface UserToken {
+  token: string;
+  registerUser: RegisterUserDto;
+}
 @Injectable()
 export class UserService {
-  protected tokens = [];
-  protected registerUser: RegisterUserDto = null;
+  protected userToken: UserToken[] = [];
   constructor(
     protected userRepository: UserRepository,
     protected tokenService: TokenService,
@@ -26,22 +28,23 @@ export class UserService {
   ) { }
   //注册用户
   async register(registerUserDto: RegisterUserDto) {
+
+
     try {
-      this.registerUser = registerUserDto;
       // 生成验证令牌
       const token = uuid();
-      this.tokens.push(token);
 
+      this.userToken.push({ token, registerUser: registerUserDto });
       // 发送验证邮件
       await this.emailService.sendVerificationEmail(
         registerUserDto.email,
         token,
       );
 
-      // 保存用户数据到临时存储，或返回足够的信息以供后续创建用户使用
-      // 例如，可以返回 token 或存储在内存中的对象的引用
       return { token, message: '请验证您的邮箱' };
     } catch (error) {
+
+
       throw new HttpException(
         '注册过程中出现错误',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -49,15 +52,20 @@ export class UserService {
     }
   }
   async verifyTokenAndCreateUser(receivedToken: string) {
-    try {
-      const tokenIndex = this.tokens.indexOf(receivedToken);
 
-      if (tokenIndex > -1) {
-        // 删除验证过的令牌
-        this.tokens.splice(tokenIndex, 1);
+    try {
+      //获取当前token
+      const verifyToken = this.userToken.find((item) => {
+        return receivedToken == item.token;
+      });
+      if (verifyToken) {
+        //删除用过的token
+        this.userToken = this.userToken.filter((item) => {
+          return receivedToken != item.token;
+        });
 
         // 验证成功后创建用户
-        const user = await this.userRepository.save(this.registerUser, {
+        const user = await this.userRepository.save(verifyToken.registerUser, {
           reload: true,
         });
         if (!user) {
@@ -69,7 +77,10 @@ export class UserService {
 
         return { success: true, message: '用户注册成功' };
       } else {
-        throw new HttpException('无效或过期的令牌', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          '验证过程中出现错误',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
     } catch (error) {
       throw new HttpException(

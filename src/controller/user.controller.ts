@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -31,8 +32,8 @@ export class UserController {
 
     return this.userService.login(loginDto);
   }
-  @Get('verify')
-  async verifyEmail(@Query('token') token: string) {
+  @Get('/verify/:token')
+  async verifyEmail(@Param('token') token: string) {
 
     // 验证令牌并更新用户状态
     return await this.userService.verifyTokenAndCreateUser(token);
