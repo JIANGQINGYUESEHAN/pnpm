@@ -21,4 +21,4 @@ export class SubscribedsRepository extends Repository<subscribed> { }
 @CustomRepository(Post)
 export class PostRepository extends Repository<Post> { }
 @CustomRepository(FileEntity)
-export class FileRepository extends Repository<File> { }
+export class FileRepository extends Repository<FileEntity> { }

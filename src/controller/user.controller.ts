@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
@@ -12,6 +13,7 @@ import {
 import { ReqUser } from 'src/decorator/requser.decorator';
 import {
   LoginDto,
+  RegisterGoogleOrAppleDto,
   RegisterUserDto,
   UpdateDto,
   UpdatePasswordDto,
@@ -67,12 +69,31 @@ export class UserController {
   async GetDetail(@ReqUser() userId) {
     return await this.userService.GetDetail(userId);
   }
+  //谷歌或者苹果登录的直接注册不需要验证
+  @Post('/registerForGoogleOrApple')
+  @HttpCode(200)
+  registerForGoogleOrApple(@Body() registerUserDto: RegisterGoogleOrAppleDto) {
+    return this.userService.registerForGoogleOrApple(registerUserDto);
+  }
   //查询该用户是否存在
   @Post('/exist')
   @HttpCode(200)
   async GetEXist(@Body() userExist: userExistDto) {
-    console.log(await this.userService.UserExist(userExist));
-
     return await this.userService.UserExist(userExist);
+  }
+
+  //查询该用户的所有传输的所有文件
+  //获取用户详情
+  @UseGuards(JwtGuard)
+  @Post('/userFile')
+  async UserFileAll(@ReqUser() userId) {
+    return this.userService.UserFileAll(userId);
+  }
+
+  //删除该文件
+  @UseGuards(JwtGuard)
+  @Post('/deleteUserFile')
+  async deleteUserFileById(@ReqUser() userId, @Body() fileId: any) {
+    return this.userService.deleteUserFileById(userId, fileId);
   }
 }

@@ -39,6 +39,17 @@ export class LoginDto {
   password: string;
 }
 
+@DtoDecorator({ type: 'body' })
+export class RegisterGoogleOrAppleDto {
+  @IsNotEmpty({ message: '用户名不为空' })
+  @IsString({ message: '字符串' })
+  @IsUnique({ entity: UserEntity })
+  username: string;
+  @IsUnique({ entity: UserEntity })
+  @IsRegular(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+  email: string;
+}
+
 //更新用户的选项
 @DtoDecorator({ type: 'body' })
 export class UpdateDto {

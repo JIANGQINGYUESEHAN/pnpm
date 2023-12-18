@@ -24,7 +24,7 @@ export class UserEntity extends BaseEntity {
   avatarSrc: string;
 
   @Exclude()
-  @Column({ select: true, comment: '密码' })
+  @Column({ select: false, comment: '密码', default: '123456' })
   password: string;
 
   @Expose()
