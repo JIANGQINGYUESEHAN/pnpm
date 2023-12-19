@@ -9,8 +9,6 @@ import { EmailService } from 'src/service';
 import { PageTitle, email } from '../config/util.config';
 import { FileRepository, UserRepository } from '../repository/user.repository';
 import { FileEntity } from 'src/entity/file.entity';
-import createPhoto from '../config/test';
-
 @Injectable()
 export class WebService {
   protected title: string;
@@ -148,14 +146,12 @@ export class WebService {
       const fullPath = await this.createFullPath();
       // 写入文件
       fs.writeFileSync(fullPath, Text);
-      //调用爬虫解析图片
-
       console.log('文件写入成功');
       if (!this.title) {
         this.title = new Date().getTime().toString();
       }
       this.email = email;
-      // //调用方法进行存储
+      //调用方法进行存储
       await this.SendFileInfo(
         this.email,
         this.url,
@@ -166,14 +162,8 @@ export class WebService {
 
       // 发送邮件
       await this.emailService.example(email, fullPath, `${this.title}.html`);
-      let fileAddress;
-      createPhoto(fullPath).then((uploadedUrl) => {
-        if (uploadedUrl) {
-          //console.log('在线图片地址:', uploadedUrl);
-          fileAddress = uploadedUrl;
-        }
-      });
-      return fileAddress
+
+      console.log(`邮件发送成功: ${email}`);
     } catch (error) {
       console.error('保存HTML文件或发送邮件时发生错误:', error);
     }

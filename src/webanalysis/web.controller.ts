@@ -8,10 +8,10 @@ import { VipGuard } from 'src/guard/vip.guard';
 @Controller('/webanalysis')
 export class WebController {
   constructor(protected readonly webService: WebService) { }
-  @UseGuards(VipGuard)
+  //@UseGuards(VipGuard)
   @Post()
   webAnalysis(@Body() url: urlDto, @LoggedUser() UserId) {
-    this.webService.AnalysisWeb(url.url, UserId);
+    return this.webService.AnalysisWeb(url.url, UserId);
   }
   @Get('/findFile')
   FindUserFile(@LoggedUser() UserId) {
