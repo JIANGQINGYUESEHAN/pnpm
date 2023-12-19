@@ -10,7 +10,6 @@ import { PageTitle, email } from '../config/util.config';
 import { FileRepository, UserRepository } from '../repository/user.repository';
 import { FileEntity } from 'src/entity/file.entity';
 import puppeteer from 'puppeteer';
-import createPhoto from 'src/config/test';
 @Injectable()
 export class WebService {
   protected title: string;
@@ -28,14 +27,43 @@ export class WebService {
       this.url = url;
       this.UserId = UserId.id;
       const data = await this.WebRequest(url);
+      console.log(data);
 
-      this.WebAnalysis(data);
+      // this.WebAnalysis(data);
     } catch (error) {
       console.error(error);
     }
   }
 
   // 发送请求，并返回一个Promise
+  // WebRequest(url: string): Promise<string> {
+  //   console.log(url);
+
+  //   return new Promise((resolve, reject) => {
+  //     const options = {
+  //       url,
+  //       method: 'GET',
+  //       timeout: 10000, // 设置为10秒超时
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     };
+
+  //     request(options, (error, response, body) => {
+  //       if (error) {
+  //         return reject(error);
+  //       }
+  //       if (response && response.statusCode === 200) {
+  //         resolve(body);
+  //       } else {
+  //         reject(
+  //           'Request failed with status code: ' +
+  //           (response && response.statusCode),
+  //         );
+  //       }
+  //     });
+  //   });
+  // }
   async WebRequest(url) {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -43,9 +71,11 @@ export class WebService {
     try {
       await page.goto(url, { waitUntil: 'networkidle2' }); // 等待页面加载完成
 
-      const htmlContent = await page.content(); // 获取整个页面的 HTML 内容
+      const data = await page.evaluate(() => {
+        return document.documentElement.outerHTML;
+      });
 
-      return htmlContent;
+      return data;
     } catch (error) {
       throw error;
     } finally {
@@ -156,14 +186,7 @@ export class WebService {
 
       // 发送邮件
       await this.emailService.example(email, fullPath, `${this.title}.html`);
-      createPhoto(fullPath).then((uploadedUrl) => {
-        if (uploadedUrl) {
 
-          // 处理或使用 fileAddress
-          console.log('上传的文件地址:', uploadedUrl);
-          // 如果需要，可以在这里调用其他函数，并将 fileAddress 作为参数
-        }
-      });
       console.log(`邮件发送成功: ${email}`);
     } catch (error) {
       console.error('保存HTML文件或发送邮件时发生错误:', error);

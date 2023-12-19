@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
-import fs from 'fs';
-import puppeteer from 'puppeteer';
-import path from 'path';
+import * as fs from 'fs';
+import * as puppeteer from 'puppeteer';
+import * as path from 'path';
 import file from './upload';
 
 async function createPhoto(url: string, width: number = 720, height: number = 720) {
