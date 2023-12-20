@@ -26,8 +26,8 @@ export class WebService {
     try {
       this.url = url;
       this.UserId = UserId.id;
-      const data = await this.WebRequest(url);
-      console.log(data);
+      // const data = await this.WebRequest(url);
+      // console.log(data);
 
       // this.WebAnalysis(data);
     } catch (error) {
@@ -64,24 +64,24 @@ export class WebService {
   //     });
   //   });
   // }
-  async WebRequest(url) {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+  // async WebRequest(url) {
+  //   const browser = await puppeteer.launch();
+  //   const page = await browser.newPage();
 
-    try {
-      await page.goto(url, { waitUntil: 'networkidle2' }); // 等待页面加载完成
+  //   try {
+  //     await page.goto(url, { waitUntil: 'networkidle2' }); // 等待页面加载完成
 
-      const data = await page.evaluate(() => {
-        return document.documentElement.outerHTML;
-      });
+  //     const data = await page.evaluate(() => {
+  //       return document.documentElement.outerHTML;
+  //     });
 
-      return data;
-    } catch (error) {
-      throw error;
-    } finally {
-      await browser.close();
-    }
-  }
+  //     return data;
+  //   } catch (error) {
+  //     throw error;
+  //   } finally {
+  //     await browser.close();
+  //   }
+  // }
   // 解析网页
   WebAnalysis(data) {
     try {

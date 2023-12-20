@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import * as qiniu from 'qiniu';
+import { uuid } from './util.config';
 
 // 配置您的七牛云账户信息
 
@@ -31,7 +32,7 @@ const putExtra = new qiniu.form_up.PutExtra();
 
 
 // 定义上传后的文件名，如果为空字符串，则七牛云会生成一个随机的文件名
-const key = `${Math.random()}.png`;
+const key = `${Math.random() * Math.random()}${uuid()}.png`;
 
 // 上传文件
 // 上传文件

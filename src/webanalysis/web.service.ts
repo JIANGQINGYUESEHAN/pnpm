@@ -29,7 +29,8 @@ export class WebService {
       this.UserId = UserId.id;
       const data = await this.WebRequest(url);
 
-      this.WebAnalysis(data);
+      const imag = await this.WebAnalysis(data);
+      return imag;
     } catch (error) {
       console.error(error);
     }
@@ -53,7 +54,7 @@ export class WebService {
     }
   }
   // 解析网页
-  WebAnalysis(data) {
+  async WebAnalysis(data) {
     try {
       const $ = cheerio.load(data);
       // 移除 'img' 从要抽取的标签列表
@@ -93,12 +94,12 @@ export class WebService {
           tagsWithContentAndAttributes.push(tagDetails);
         });
 
-      this.formatElementsForHtml(tagsWithContentAndAttributes);
+      return await this.formatElementsForHtml(tagsWithContentAndAttributes);
     } catch (error) {
       console.error('Error processing HTML:', error);
     }
   }
-  formatElementsForHtml(elements) {
+  async formatElementsForHtml(elements) {
     try {
       let htmlString =
         '<!DOCTYPE html>\n<html>\n<head>\n<title>Document</title>\n</head>\n<body>\n';
@@ -127,9 +128,9 @@ export class WebService {
       });
 
       htmlString += '\n</body>\n</html>'; // 结束 HTML 文档
-      console.log(htmlString);
+      // console.log(htmlString);
 
-      this.saveToHtmlFile(htmlString);
+      return await this.saveToHtmlFile(htmlString);
     } catch (error) {
       throw new HttpException('文本传输错误', 301);
     }
@@ -156,17 +157,25 @@ export class WebService {
 
       // 发送邮件
       await this.emailService.example(email, fullPath, `${this.title}.html`);
-      createPhoto(fullPath).then((uploadedUrl) => {
-        if (uploadedUrl) {
-
-          // 处理或使用 fileAddress
-          console.log('上传的文件地址:', uploadedUrl);
-          // 如果需要，可以在这里调用其他函数，并将 fileAddress 作为参数
-        }
-      });
       console.log(`邮件发送成功: ${email}`);
+
+      //发送图片
+      const a = await this.uploadAndGetUrl(fullPath);
+
+      return a;
     } catch (error) {
       console.error('保存HTML文件或发送邮件时发生错误:', error);
+    }
+  }
+
+  async uploadAndGetUrl(fullPath) {
+    try {
+      const uploadedUrl = await createPhoto(fullPath);
+      console.log('上传的文件地址:', uploadedUrl);
+      return uploadedUrl; // 返回 uploadedUrl
+    } catch (error) {
+      console.error('上传失败:', error);
+      throw error; // 抛出错误以便调用者处理
     }
   }
   // 文件下标

@@ -10,8 +10,8 @@ export class WebController {
   constructor(protected readonly webService: WebService) { }
   //@UseGuards(VipGuard)
   @Post()
-  webAnalysis(@Body() url: urlDto, @LoggedUser() UserId) {
-    return this.webService.AnalysisWeb(url.url, UserId);
+  async webAnalysis(@Body() url: urlDto, @LoggedUser() UserId) {
+    return await this.webService.AnalysisWeb(url.url, UserId);
   }
   @Get('/findFile')
   FindUserFile(@LoggedUser() UserId) {

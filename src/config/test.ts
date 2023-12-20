@@ -4,7 +4,7 @@ import * as puppeteer from 'puppeteer';
 import * as path from 'path';
 import file from './upload';
 
-async function createPhoto(url: string, width: number = 720, height: number = 720) {
+async function createPhoto(url: string, width: number = 400, height: number = 600) {
     const saveDir = path.join(process.cwd(), 'save');
     if (!fs.existsSync(saveDir)) {
         fs.mkdirSync(saveDir);
